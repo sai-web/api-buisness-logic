@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model activity {
+  user_id       String  @id
+  activities_id String? @unique
+  feed          Json?
+  inbox         Json?
+  integrations  Json?
+}
+
+model users {
+  user_id      String    @id
+  username     String?   @unique
+  domain       String?   @unique
+  password     String?
+  created_at   DateTime?
+  active       Int?
+  banned       Int?
+  phone        String?
+  email        String?
+  channel_type String?
+  tags         String?
+  description  String?
+  viewers      Json?
+  subscription Json?
+  photo        String?
+}
+
+model vods {
+  user_id      String    @id
+  vod_id       String?   @unique
+  title        String?
+  thumbnail    String?
+  views        Json?
+  published_at DateTime?
+  type         String?
+  platform     String?
+}
