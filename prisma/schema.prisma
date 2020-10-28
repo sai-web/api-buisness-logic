@@ -8,38 +8,98 @@ datasource db {
 }
 
 model activity {
-  user_id       String  @id
-  activities_id String? @unique
-  feed          Json?
-  inbox         Json?
-  integrations  Json?
+  user_id String          @id
+  state   activity_state?
 }
 
 model users {
-  user_id      String    @id
-  username     String?   @unique
-  domain       String?   @unique
-  password     String?
-  created_at   DateTime?
-  active       Int?
-  banned       Int?
+  user_id      String            @id
+  photo        String?
+  username     String            @unique
+  domain       String            @unique
+  password     String
+  created_at   DateTime
   phone        String?
   email        String?
-  channel_type String?
   tags         String?
   description  String?
-  viewers      Json?
-  subscription Json?
-  photo        String?
+  viewers      Int?              @default(0)
+  subscription Int?              @default(0)
+  vods         Int?              @default(0)
+  channelInfo  users_channelInfo
+  state        users_state
 }
 
 model vods {
-  user_id      String    @id
-  vod_id       String?   @unique
+  user_id      String
+  vod_id       String    @unique
   title        String?
   thumbnail    String?
-  views        Json?
+  views        Int?      @default(0)
   published_at DateTime?
   type         String?
   platform     String?
+  url          String?
+
+  @@id([user_id, vod_id])
+}
+
+model subscription_manager {
+  creator_id    String
+  viewer_id     String
+  subscribed_at DateTime?
+
+  @@id([creator_id, viewer_id])
+}
+
+model view_vod {
+  viewer_id String
+  vod_id    String
+
+  @@id([viewer_id, vod_id])
+}
+
+model feed {
+  user_id   String    @id
+  feed_id   String?   @unique
+  username  String?
+  message   String?
+  timestamp DateTime?
+}
+
+model integrations {
+  user_id       String                      @id
+  platform      String?
+  accountName   String?
+  accountURL    String?
+  showOnProfile integrations_showOnProfile?
+}
+
+enum users_channelInfo {
+  banned
+  standard
+  premium
+}
+
+enum users_state {
+  offline
+  online
+  STREAMING
+  CHATTING
+  PLAYING
+  LISTENING
+}
+
+enum activity_state {
+  offline
+  online
+  STREAMING
+  LISTENING
+  PLAYING
+  CHATTING
+}
+
+enum integrations_showOnProfile {
+  true
+  false
 }

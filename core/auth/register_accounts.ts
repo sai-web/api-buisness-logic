@@ -14,7 +14,7 @@ interface user {
 // var prisma = new PrismaClient()
 
 export function registration(param: user): void {   //this checks for username and then creates a new users
-    var id: string = v4().toString().slice(0, 16)
+    var id: string = v4()
     var hashedPassword: string = hashPassword(param.password)
     usernameExists(param.username, param.prisma)
         .then(data => {
@@ -49,9 +49,8 @@ async function addUser(id: string, username: string, password: string, prisma: P
             domain: username.toLowerCase().replace(/ /g, ''),
             password: password,
             created_at: new Date(),
-            active: 1,
-            banned: 0,
-            channel_type: 'STANDARD',
+            channelInfo: "standard",
+            state: "online",
             tags: "Creator and Viewer",
             description: `hey there I'm new to pulse.`
         }
@@ -59,7 +58,7 @@ async function addUser(id: string, username: string, password: string, prisma: P
     const activity = await prisma.activity.create({
         data: {
             user_id: id,
-            activities_id: v4()
+            state: "online"
         }
     })
     return [user, activity]
