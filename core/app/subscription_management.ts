@@ -2,12 +2,12 @@ import { PrismaClient, subscription_manager } from '@prisma/client'
 import { UsernameNotFound } from '../Errors/UsernameNotFound'
 import { creatorInfo } from './interfaces'
 
-export async function subscribe(user: creatorInfo, user_id: string, prisma: PrismaClient): Promise<void> {
-    if (addSubs(user, user_id, prisma)) { }
+export async function subscribe(user: creatorInfo, user_id: string, callback: Function, prisma: PrismaClient): Promise<void> {
+    if (addSubs(user, user_id, prisma)) callback()
     else throw new UsernameNotFound()
 }
-export async function unsubscribe(user: creatorInfo, user_id: string, prisma: PrismaClient): Promise<void> {
-    if (deleteSubs(user, user_id, prisma)) { }
+export async function unsubscribe(user: creatorInfo, user_id: string, callback: Function, prisma: PrismaClient): Promise<void> {
+    if (deleteSubs(user, user_id, prisma)) callback()
     else throw new UsernameNotFound()
 }
 export async function getSubscriptions(user_id: string, prisma: PrismaClient): Promise<{ creator_id: string }[]> {
