@@ -1,8 +1,8 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, integrations, BatchPayload } from '@prisma/client'
 import { App } from './interfaces'
 
-export async function connect(app: App, user_id: string, prisma: PrismaClient) {
-    var result = await prisma.integrations.create({
+export async function connect(app: App, user_id: string, prisma: PrismaClient): Promise<integrations> {
+    var result: integrations = await prisma.integrations.create({
         data: {
             user_id: user_id,
             platform: app.platform,
@@ -14,8 +14,8 @@ export async function connect(app: App, user_id: string, prisma: PrismaClient) {
     return result
 }
 
-export async function disconnect(platform: string, user_id: string, prisma: PrismaClient) {
-    var result = await prisma.integrations.deleteMany({
+export async function disconnect(platform: string, user_id: string, prisma: PrismaClient): Promise<BatchPayload> {
+    var result: BatchPayload = await prisma.integrations.deleteMany({
         where: {
             user_id: user_id,
             platform
@@ -24,8 +24,8 @@ export async function disconnect(platform: string, user_id: string, prisma: Pris
     return result
 }
 
-export async function getIntegrations(user_id: string, prisma: PrismaClient) {
-    var result = await prisma.integrations.findMany({
+export async function getIntegrations(user_id: string, prisma: PrismaClient): Promise<integrations[]> {
+    var result: integrations[] = await prisma.integrations.findMany({
         where: {
             user_id: user_id
         }
