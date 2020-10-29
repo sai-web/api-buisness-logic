@@ -2,12 +2,12 @@ import { PrismaClient, vods } from '@prisma/client'
 import { v4 } from 'uuid'
 import { vodInfo } from './interfaces'
 
-export async function createPost(vod: vodInfo, user_id: string, prisma: PrismaClient) {
-    var result = await uploadVod(vod, user_id, prisma)
+export async function createPost(vod: vodInfo, user_id: string, prisma: PrismaClient): Promise<vods> {
+    var result: vods = await uploadVod(vod, user_id, prisma)
     return result
 }
-export async function deletePost(vod_id: string, prisma: PrismaClient) {
-    var result = await removeVod(vod_id, prisma)
+export async function deletePost(vod_id: string, prisma: PrismaClient): Promise<vods> {
+    var result: vods = await removeVod(vod_id, prisma)
     return result
 }
 export async function getVods(user_id: string, prisma: PrismaClient): Promise<vods[]> {
@@ -29,8 +29,8 @@ export async function watchVod(vod_id: string, user_id: string, prisma: PrismaCl
 }
 
 //private methods which are not exported
-async function uploadVod(vod: vodInfo, user_id: string, prisma: PrismaClient) {
-    var result = await prisma.vods.create({
+async function uploadVod(vod: vodInfo, user_id: string, prisma: PrismaClient): Promise<vods> {
+    var result: vods = await prisma.vods.create({
         data: {
             user_id: user_id,
             vod_id: v4(),
@@ -45,8 +45,8 @@ async function uploadVod(vod: vodInfo, user_id: string, prisma: PrismaClient) {
     })
     return result
 }
-async function removeVod(vod_id: string, prisma: PrismaClient) {
-    var result = await prisma.vods.delete({
+async function removeVod(vod_id: string, prisma: PrismaClient): Promise<vods> {
+    var result: vods = await prisma.vods.delete({
         where: {
             vod_id: vod_id
         }
