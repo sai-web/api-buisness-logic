@@ -12,6 +12,30 @@ model activity {
   state   activity_state?
 }
 
+model feed {
+  user_id   String    @id
+  feed_id   String?   @unique
+  username  String?
+  message   String?
+  timestamp DateTime?
+}
+
+model integrations {
+  user_id       String                      @id
+  platform      String?
+  accountName   String?
+  accountURL    String?
+  showOnProfile integrations_showOnProfile?
+}
+
+model subscription_manager {
+  creator_id    String
+  viewer_id     String
+  subscribed_at DateTime?
+
+  @@id([creator_id, viewer_id])
+}
+
 model users {
   user_id      String            @id
   photo        String?
@@ -30,6 +54,13 @@ model users {
   state        users_state
 }
 
+model view_vod {
+  viewer_id String
+  vod_id    String
+
+  @@id([viewer_id, vod_id])
+}
+
 model vods {
   user_id      String
   vod_id       String    @unique
@@ -44,35 +75,18 @@ model vods {
   @@id([user_id, vod_id])
 }
 
-model subscription_manager {
-  creator_id    String
-  viewer_id     String
-  subscribed_at DateTime?
-
-  @@id([creator_id, viewer_id])
+enum activity_state {
+  offline
+  online
+  STREAMING
+  LISTENING
+  PLAYING
+  CHATTING
 }
 
-model view_vod {
-  viewer_id String
-  vod_id    String
-
-  @@id([viewer_id, vod_id])
-}
-
-model feed {
-  user_id   String    @id
-  feed_id   String?   @unique
-  username  String?
-  message   String?
-  timestamp DateTime?
-}
-
-model integrations {
-  user_id       String                      @id
-  platform      String?
-  accountName   String?
-  accountURL    String?
-  showOnProfile integrations_showOnProfile?
+enum integrations_showOnProfile {
+  true
+  false
 }
 
 enum users_channelInfo {
@@ -88,18 +102,4 @@ enum users_state {
   CHATTING
   PLAYING
   LISTENING
-}
-
-enum activity_state {
-  offline
-  online
-  STREAMING
-  LISTENING
-  PLAYING
-  CHATTING
-}
-
-enum integrations_showOnProfile {
-  true
-  false
 }
