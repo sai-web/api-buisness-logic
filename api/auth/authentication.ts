@@ -15,7 +15,7 @@ Router.post('/login', (req: Request, res: Response) => {
         username: req.body.username,
         password: req.body.password,
         prisma: req.prisma
-    }, res)
+    }, res, req)
 })
 
 //register route that will add user creds to the database.

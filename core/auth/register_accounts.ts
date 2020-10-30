@@ -1,10 +1,11 @@
 import { activity, PrismaClient, users } from '@prisma/client'
+import { UsernameExists } from '../Errors/UsernameExists'
+
 import bcrypt from 'bcryptjs'
 import { v4 } from 'uuid'
-import { UsernameExists } from '../Errors/UsernameExists'
-import { Response } from 'express'
+import Joi from 'joi'
 
-//imp note we are not validating username and password on the backend so do it on the front-end
+import { Response } from 'express'
 
 interface user {
     username: string
@@ -12,21 +13,32 @@ interface user {
     prisma: PrismaClient
 }
 
+const schema: Joi.ObjectSchema<any> = Joi.object().keys({
+    username: Joi.string().regex(/^[a-zA-Z0-9_!@#$*]{2,20}$/).min(2).max(20).required(),
+    password: Joi.string().regex(/[^]*/).min(10).max(30).required()
+})
+
 // var prisma = new PrismaClient()
 
 export function registration(param: user, res: Response): void {   //this checks for username and then creates a new users
-    var id: string = v4()
-    var hashedPassword: string = hashPassword(param.password)
-    usernameExists(param.username, param.prisma)
+    schema.validateAsync({ username: param.username, password: param.password })
         .then(data => {
-            if (data === "not present") {
-                addUser(id, param.username, hashedPassword, param.prisma)
+            if (!data.error) {
+                var id: string = v4()
+                var hashedPassword: string = hashPassword(param.password)
+                usernameExists(param.username, param.prisma)
                     .then(data => {
-                        res.statusCode = 200
-                        res.json(data)
+                        if (data === "not present") {
+                            addUser(id, param.username, hashedPassword, param.prisma)
+                                .then(data => {
+                                    res.statusCode = 201
+                                    res.json(data)
+                                })
+                        }
+                        else throw new UsernameExists() //custom error object
                     })
-            }
-            else throw new UsernameExists() //custom error object
+                    .catch(err => errorHandler(err, res))
+            } else throw new UsernameExists()  //custom error object
         })
         .catch(err => errorHandler(err, res))
 }
@@ -70,7 +82,7 @@ function hashPassword(passwordToHash: string): string {  //this uses sync functi
 }
 
 const errorHandler = (err: Error, res: Response): void => { //handles all errors and returns the error object
-    res.statusCode = 404
+    res.statusCode = 400
     res.json({
         exception: err.name,
         status: err.message

@@ -3,4 +3,4 @@ import { Router as RevokeRouter } from './revoke_tokens'
 
 export const Router = express.Router()
 
-Router.use('/refresh_token', RevokeRouter)
+Router.use('/revoke_token', RevokeRouter)
