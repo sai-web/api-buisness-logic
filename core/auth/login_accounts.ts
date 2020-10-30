@@ -14,7 +14,7 @@ interface user {
 
 interface Payload {
     username: string
-    password: string
+    refresh_token?: string
 }
 
 // var prisma = new PrismaClient()
@@ -29,12 +29,10 @@ export function login(param: user, res: Response): void {
                             if (data) {
                                 res.statusCode = 200
                                 var access_token = App_Token({
-                                    username: param.username,
-                                    password: param.password
+                                    username: param.username
                                 })
                                 var refresh_token = Refresh_Token({
-                                    username: param.username,
-                                    password: param.password
+                                    username: param.username
                                 })
                                 res.json({
                                     type: "bearer",
@@ -66,7 +64,7 @@ async function checkCreds(password: string, hashedPassword: string): Promise<boo
     return bcrypt.compare(password, hashedPassword) //returns a boolean
 }
 
-function App_Token(payload: Payload): string {
+function App_Token(payload: Payload): string {  //access token that will expire in 10 days
     const access_token = jwt.sign(payload, 'access token secret', {
         algorithm: "HS256",
         expiresIn: 864000
@@ -74,7 +72,7 @@ function App_Token(payload: Payload): string {
     return access_token
 }
 
-function Refresh_Token(payload: Payload): string {
+function Refresh_Token(payload: Payload): string {  //access token that will expire in 11 days
     const refresh_token = jwt.sign(payload, 'refresh token secret', {
         algorithm: "HS512",
         expiresIn: 950400
@@ -82,7 +80,7 @@ function Refresh_Token(payload: Payload): string {
     return refresh_token
 }
 
-const errorHandler = (err: Error, res: Response): void => {
+const errorHandler = (err: Error, res: Response): void => { //this will handle all errors and return the error object
     res.statusCode = 404
     res.json({
         exception: err.name,
