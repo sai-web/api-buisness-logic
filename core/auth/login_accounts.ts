@@ -4,7 +4,7 @@ import { UsernameNotFound } from '../Errors/UsernameNotFound'
 import { Response, Request } from 'express'
 import jwt from 'jsonwebtoken'
 
-import { access_token_secret, refresh_token_secret, build_type } from '../../config/environment_variables'
+import { access_token_secret, refresh_token_secret, csrf_token_secret, build_type } from '../../config/environment_variables'
 
 //imp note we are not validating username and password on the backend so do it on the front-end
 
@@ -74,6 +74,14 @@ export function Refresh_Token(payload: Payload): string {  //access token that w
         expiresIn: 950400
     })
     return refresh_token
+}
+
+export function Csrf_Token(payload: Payload): string {
+    const Csrf_token = jwt.sign(payload, csrf_token_secret, {
+        algorithm: "HS512",
+        expiresIn: 864000
+    })
+    return Csrf_token
 }
 
 async function findUser(username: string, prisma: PrismaClient): Promise<users | null> {   //this returns a users object along with a promise allowing to run the .then()

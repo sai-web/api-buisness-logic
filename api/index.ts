@@ -2,10 +2,6 @@ import express, { Express } from 'express'
 import helmet from 'helmet'
 import cors from 'cors'
 import rateLimiter from 'express-rate-limit'
-// import cookieParser from 'cookie-parser'
-// import cookieSession from 'cookie-session'
-import csrf from 'csurf'
-// import session from 'express-session'
 
 import { PrismaClient } from '@prisma/client'
 
@@ -43,21 +39,10 @@ app.use(rateLimiter({   //prevent multiple requests from being sent to api from 
 app.use(express.json()) //convert incoming req into JSON type
 app.use(express.urlencoded({ extended: false })) //remove utf-8 enconding
 app.use(cookieParser())
-// app.use(session({ secret: "here goes ma secret", resave: false, saveUninitialized: true }))
-app.use(csrf({ cookie: true }))
-app.use(function (req, res, next) {
-    res.locals._csrf = req.csrfToken();
-    next();
-});
 app.use((req, _, next) => {   //inject prisma into the req
     req.prisma = prisma
     next()
 })
-
-//csrf
-// app.set('trust proxy',1)
-// app.use(csrf({ value: req => (req.header('csrf') || "token not available") }))
-
 
 //all the Routers
 app.use('/auth', AuthRouter)
@@ -71,7 +56,7 @@ features to add
 2) 2FA with the speakeasy module for TOTP
 3) xml attacks using libxmljs library :: not using xml processed data
 4) authorization by providing roles
-5) implement CSRF protection
+5) implement CSRF protection :: done
 https://dzone.com/articles/10-nodejs-security-practices
 https://levelup.gitconnected.com/how-to-implement-csrf-tokens-in-express-f867c9e95af0
 http://sahatyalkabov.com/jsrecipes/#!/backend/csrf-protection-with-express
