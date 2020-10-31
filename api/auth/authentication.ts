@@ -9,6 +9,14 @@ export const Router = express.Router()
 //the router middlewares within auth
 Router.use('/oauth2', OauthRouter)
 
+//initiating the csrf token and sending it to the client
+Router.get('/csrf', (req: Request, res: Response) => {
+    res.json({
+        _csrf: req.csrfToken(),
+        expiration: 24 * 60 * 60 * 1000
+    })
+})
+
 //login route that will send access_token and refresh token
 Router.post('/login', (req: Request, res: Response) => {
     login({

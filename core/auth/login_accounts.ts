@@ -46,7 +46,6 @@ export function login(param: user, res: Response, req: Request): void {
                                     secure: build_type === "production",
                                     maxAge: 1000 * 60 * 60 * 24 * 11
                                 })
-                                res.cookie('CSRF_token', req.csrfToken(), { sameSite: true })
                                 res.json({
                                     type: "bearer",
                                     status: "token has been set"
