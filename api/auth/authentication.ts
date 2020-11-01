@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express'
 import { login, registration } from '../../index'
 
 import { Router as OauthRouter } from './oauth'
+import { Router as TwoFactorRouter } from './two-factor-auth'
 
 import { Csrf_Token } from '../../index'
 import jwt from 'jsonwebtoken'
@@ -12,6 +13,7 @@ export const Router = express.Router()
 
 //the router middlewares within auth
 Router.use('/oauth2', OauthRouter)
+Router.use('/totp', TwoFactorRouter)
 
 //initiating the csrf token and sending it to the client
 Router.get('/csrf', (req: Request, res: Response) => {

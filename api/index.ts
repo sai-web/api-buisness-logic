@@ -2,19 +2,19 @@ import express, { Express } from 'express'
 import helmet from 'helmet'
 import cors from 'cors'
 import rateLimiter from 'express-rate-limit'
+import cookieParser from 'cookie-parser'
 
 import { PrismaClient } from '@prisma/client'
 
 import { Router as AuthRouter } from './auth/authentication'
+import { Router as AppRouter } from './app'
 
-import * as dotenv from 'dotenv'
-import cookieParser from 'cookie-parser'
-dotenv.config()
+import { port } from '../config/environment_variables'
 
 // tweaked the index.d.ts for express to accept PrismaClient in req
 
 const app: Express = express()
-const port = 8080
+const portnumber = port
 var prisma: PrismaClient = new PrismaClient()
 
 //security related middlewares
@@ -46,9 +46,10 @@ app.use((req, _, next) => {   //inject prisma into the req
 
 //all the Routers
 app.use('/auth', AuthRouter)
+app.use('/app', AppRouter)
 
 //start the server
-app.listen(process.env.PORT, () => console.log(`server started at http://localhost:${port}`))
+app.listen(portnumber, () => console.log(`server started at http://localhost:${portnumber}`))
 
 /*
 features to add
