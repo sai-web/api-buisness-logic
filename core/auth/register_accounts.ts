@@ -6,6 +6,9 @@ import { v4 } from 'uuid'
 import Joi from 'joi'
 
 import { Response } from 'express'
+// import jwt from 'jsonwebtoken'
+
+// import { email_token_secret } from '../../config/environment_variables'
 
 interface user {
     username: string
@@ -13,9 +16,14 @@ interface user {
     prisma: PrismaClient
 }
 
+// interface Payload {
+//     username: string
+//     refresh_token?: string
+// }
+
 const schema: Joi.ObjectSchema<any> = Joi.object().keys({
-    username: Joi.string().regex(/^[a-zA-Z0-9_!@#$*]{2,20}$/).min(2).max(20).required(),
-    password: Joi.string().regex(/[^]*/).min(10).max(30).required()
+    username: Joi.string().regex(/^([a-zA-Z0-9 ]{2,20})$/).min(2).max(20).required(),
+    password: Joi.string().min(10).max(30).required()
 })
 
 // var prisma = new PrismaClient()
@@ -42,6 +50,14 @@ export function registration(param: user, res: Response): void {   //this checks
         })
         .catch(err => errorHandler(err, res))
 }
+
+// function EmailToken(payload: Payload) {
+//     const Csrf_token = jwt.sign(payload, email_token_secret, {
+//         algorithm: "HS512",
+//         expiresIn: 864000
+//     })
+//     return Csrf_token
+// }
 
 async function usernameExists(username: string, prisma: PrismaClient): Promise<users | "not present"> { //this is a promise hence allowing us to run the .then() after querying the database
     const result: users | "not present" = await prisma.users.findOne({
