@@ -84,10 +84,13 @@ export function Csrf_Token(payload: Payload): string {
     return Csrf_token
 }
 
-async function findUser(username: string, prisma: PrismaClient): Promise<users | null> {   //this returns a users object along with a promise allowing to run the .then()
+async function findUser(username: string, prisma: PrismaClient): Promise<{ password: string } | null> {   //this returns a users object along with a promise allowing to run the .then()
     const result = await prisma.users.findOne({
         where: {
             domain: username.toLowerCase().replace(/ /g, '')
+        },
+        select: {
+            password: true
         }
     })
     return result   //returns a users object or null
