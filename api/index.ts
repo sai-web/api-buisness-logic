@@ -6,7 +6,7 @@ import cookieParser from 'cookie-parser'
 
 import { PrismaClient } from '@prisma/client'
 
-import { Router as AuthRouter } from './auth/authentication'
+import { Router as AuthRouter } from './auth'
 import { Router as AppRouter } from './app'
 
 import { port } from '../config/environment_variables'
@@ -58,6 +58,7 @@ features to add
 3) xml attacks using libxmljs library :: not using xml processed data
 4) authorization by providing roles
 5) implement CSRF protection :: done
+6) send email verifications through node mailer
 https://dzone.com/articles/10-nodejs-security-practices
 https://levelup.gitconnected.com/how-to-implement-csrf-tokens-in-express-f867c9e95af0
 http://sahatyalkabov.com/jsrecipes/#!/backend/csrf-protection-with-express
