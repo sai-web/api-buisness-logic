@@ -43,6 +43,7 @@ model users {
   domain       String            @unique
   password     String
   created_at   DateTime
+  confirmed    users_confirmed?  @default(false)
   phone        String?
   email        String?
   tags         String?
@@ -102,4 +103,9 @@ enum users_state {
   CHATTING
   PLAYING
   LISTENING
+}
+
+enum users_confirmed {
+  true
+  false
 }

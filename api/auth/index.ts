@@ -1,12 +1,11 @@
 import express, { Request, Response } from 'express'
-import { login, registration } from '../../index'
+import { login, registration, Csrf_Token, emailConfirmation } from '../../index'
 
 import { Router as OauthRouter } from './oauth'
 import { Router as TwoFactorRouter } from './two-factor-auth'
 
-import { Csrf_Token } from '../../index'
 import jwt from 'jsonwebtoken'
-import { csrf_token_secret } from '../../config/environment_variables'
+import { csrf_token_secret, email_token_secret } from '../../config/environment_variables'
 
 //initiating the AuthRouter
 export const Router = express.Router()
@@ -27,15 +26,24 @@ Router.get('/csrf', (req: Request, res: Response) => {
 
 //login route that will send access_token and refresh token
 Router.post('/login', (req: Request, res: Response) => {
-    jwt.verify(`${req.query._csrf}`, csrf_token_secret, (err, data) => {
-        if (!err) {
-            login({
-                username: req.body.username,
-                password: req.body.password,
-                prisma: req.prisma
-            }, res, req)
-        } else res.status(400).json({ status: "invalid csrf" })
-    })
+    if (req.query.token) {
+        jwt.verify(`${req.query.token}`, email_token_secret, (err, data: any) => {
+            if (!err) {
+                emailConfirmation(data.username, req.prisma)
+                login({
+                    username: req.body.username,
+                    password: req.body.password,
+                    prisma: req.prisma
+                }, res, req)
+            } else res.status(400).json({ status: "email could not be confirmed" })
+        })
+    } else {
+        login({
+            username: req.body.username,
+            password: req.body.password,
+            prisma: req.prisma
+        }, res, req)
+    }
 })
 
 //register route that will add user creds to the database.
@@ -44,6 +52,7 @@ Router.post('/register', (req: Request, res: Response) => {
     registration({
         username: req.body.username,
         password: req.body.password,
+        email: req.body.email,
         prisma: req.prisma
     }, res)
 })

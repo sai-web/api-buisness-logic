@@ -25,39 +25,52 @@ export function login(param: user, res: Response, req: Request): void {
     findUser(param.username, param.prisma)
         .then(data => {
             if (data !== null) {
-                if (data.password) {    //make sure the password is not null
-                    checkCreds(param.password, data.password)   //checks whether the passwords match
-                        .then(data => {
-                            if (data) {
-                                var access_token = App_Token({
-                                    username: param.username
-                                })
-                                var refresh_token = Refresh_Token({
-                                    username: param.username
-                                })
-                                res.statusCode = 202
-                                res.cookie('access_token', access_token, {
-                                    httpOnly: true,
-                                    secure: build_type === "production",
-                                    maxAge: 1000 * 60 * 60 * 24 * 10
-                                })
-                                res.cookie('refresh_token', refresh_token, {
-                                    httpOnly: true,
-                                    secure: build_type === "production",
-                                    maxAge: 1000 * 60 * 60 * 24 * 11
-                                })
-                                res.json({
-                                    type: "bearer",
-                                    status: "token has been set"
-                                })
-                            }
-                            else throw new UsernameNotFound()   //custom error object
-                        })
-                        .catch(err => errorHandler(err, res))
+                if (data.confirmed === "true") {
+                    if (data.password) {    //make sure the password is not null
+                        checkCreds(param.password, data.password)   //checks whether the passwords match
+                            .then(data => {
+                                if (data) {
+                                    var access_token = App_Token({
+                                        username: param.username
+                                    })
+                                    var refresh_token = Refresh_Token({
+                                        username: param.username
+                                    })
+                                    res.statusCode = 202
+                                    res.cookie('access_token', access_token, {
+                                        httpOnly: true,
+                                        secure: build_type === "production",
+                                        maxAge: 1000 * 60 * 60 * 24 * 10
+                                    })
+                                    res.cookie('refresh_token', refresh_token, {
+                                        httpOnly: true,
+                                        secure: build_type === "production",
+                                        maxAge: 1000 * 60 * 60 * 24 * 11
+                                    })
+                                    res.json({
+                                        type: "bearer",
+                                        status: "token has been set"
+                                    })
+                                }
+                                else throw new UsernameNotFound()   //custom error object
+                            })
+                            .catch(err => errorHandler(err, res))
+                    } else res.status(400).json({ status: "confirm email to proceed" })
                 }
             } else throw new UsernameNotFound() //custom error object
         })
         .catch(err => errorHandler(err, res))
+}
+
+export async function emailConfirmation(username: string, prisma: PrismaClient) {
+    const result = await prisma.users.update({
+        where: {
+            username
+        },
+        data: {
+            confirmed: 'true'
+        }
+    })
 }
 
 export function App_Token(payload: Payload): string {  //access token that will expire in 10 days
@@ -84,13 +97,14 @@ export function Csrf_Token(payload: Payload): string {
     return Csrf_token
 }
 
-async function findUser(username: string, prisma: PrismaClient): Promise<{ password: string } | null> {   //this returns a users object along with a promise allowing to run the .then()
+async function findUser(username: string, prisma: PrismaClient): Promise<{ password: string, confirmed: "true" | "false" | null } | null> {   //this returns a users object along with a promise allowing to run the .then()
     const result = await prisma.users.findOne({
         where: {
             domain: username.toLowerCase().replace(/ /g, '')
         },
         select: {
-            password: true
+            password: true,
+            confirmed: true
         }
     })
     return result   //returns a users object or null

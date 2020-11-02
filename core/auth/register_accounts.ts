@@ -6,20 +6,22 @@ import { v4 } from 'uuid'
 import Joi from 'joi'
 
 import { Response } from 'express'
-// import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
+import nodemailer from 'nodemailer'
 
-// import { email_token_secret } from '../../config/environment_variables'
+import { email_token_secret, email_address, email_password } from '../../config/environment_variables'
 
 interface user {
     username: string
     password: string
+    email: string
     prisma: PrismaClient
 }
 
-// interface Payload {
-//     username: string
-//     refresh_token?: string
-// }
+interface Payload {
+    username: string
+    refresh_token?: string
+}
 
 const schema: Joi.ObjectSchema<any> = Joi.object().keys({
     username: Joi.string().regex(/^([a-zA-Z0-9 ]{2,20})$/).min(2).max(20).required(),
@@ -39,6 +41,7 @@ export function registration(param: user, res: Response): void {   //this checks
                         if (data === "not present") {
                             addUser(id, param.username, hashedPassword, param.prisma)
                                 .then(data => {
+                                    SendEmail(param.email, { username: param.username })
                                     res.statusCode = 201
                                     res.json(data)
                                 })
@@ -51,13 +54,38 @@ export function registration(param: user, res: Response): void {   //this checks
         .catch(err => errorHandler(err, res))
 }
 
-// function EmailToken(payload: Payload) {
-//     const Csrf_token = jwt.sign(payload, email_token_secret, {
-//         algorithm: "HS512",
-//         expiresIn: 864000
-//     })
-//     return Csrf_token
-// }
+function EmailToken(payload: Payload) {
+    const Csrf_token = jwt.sign(payload, email_token_secret, {
+        algorithm: "HS512",
+        expiresIn: 86400
+    })
+    return Csrf_token
+}
+
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: email_address,
+        pass: email_password
+    },
+    tls: {
+        rejectUnauthorized: false
+    }
+});
+
+async function SendEmail(email: string, params: { username: string }) {
+    const mailToken = await EmailToken(params)
+    transporter.sendMail({
+        from: email_address,
+        to: email,
+        subject: 'Required account confirmation within 24 hours',
+        text: `Hello ${params.username}, you're almost done. Now to start using your account confirm your email address within the next 24 hours!!`,
+        html: `<a href="http://localhost:8080/auth/login?token=${mailToken}">confirm your email</a>`
+    }, function (error, info) {
+        if (error) return false
+        else return true
+    });
+}
 
 async function usernameExists(username: string, prisma: PrismaClient): Promise<users | "not present"> { //this is a promise hence allowing us to run the .then() after querying the database
     const result: users | "not present" = await prisma.users.findOne({
@@ -79,7 +107,8 @@ async function addUser(id: string, username: string, password: string, prisma: P
             channelInfo: "standard",
             state: "online",
             tags: "Creator and Viewer",
-            description: `hey there I'm new to pulse.`
+            description: `hey there I'm new to pulse.`,
+            confirmed: 'false'
         }
     })
     const activity = await prisma.activity.create({
