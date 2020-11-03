@@ -1,4 +1,4 @@
-import { PrismaClient, users } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import { UsernameNotFound } from '../Errors/UsernameNotFound'
 import { Response, Request } from 'express'
@@ -55,8 +55,8 @@ export function login(param: user, res: Response, req: Request): void {
                                 else throw new UsernameNotFound()   //custom error object
                             })
                             .catch(err => errorHandler(err, res))
-                    } else res.status(400).json({ status: "confirm email to proceed" })
-                }
+                    }
+                } else res.status(400).json({ status: "confirm email to proceed" })
             } else throw new UsernameNotFound() //custom error object
         })
         .catch(err => errorHandler(err, res))
@@ -71,6 +71,7 @@ export async function emailConfirmation(username: string, prisma: PrismaClient) 
             confirmed: 'true'
         }
     })
+    return result
 }
 
 export function App_Token(payload: Payload): string {  //access token that will expire in 10 days

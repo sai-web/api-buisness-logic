@@ -1,4 +1,4 @@
-import { activity, PrismaClient, users } from '@prisma/client'
+import { PrismaClient, users } from '@prisma/client'
 import { UsernameExists } from '../Errors/UsernameExists'
 
 import bcrypt from 'bcryptjs'
@@ -25,13 +25,14 @@ interface Payload {
 
 const schema: Joi.ObjectSchema<any> = Joi.object().keys({
     username: Joi.string().regex(/^([a-zA-Z0-9 ]{2,20})$/).min(2).max(20).required(),
-    password: Joi.string().min(10).max(30).required()
+    password: Joi.string().min(10).max(30).required(),
+    email: Joi.string().email().required()
 })
 
 // var prisma = new PrismaClient()
 
 export function registration(param: user, res: Response): void {   //this checks for username and then creates a new users
-    schema.validateAsync({ username: param.username, password: param.password })
+    schema.validateAsync({ username: param.username, password: param.password, email: param.email })
         .then(data => {
             if (!data.error) {
                 var id: string = v4()
@@ -41,10 +42,10 @@ export function registration(param: user, res: Response): void {   //this checks
                         if (data === "not present") {
                             addUser(id, param.username, hashedPassword, param.prisma)
                                 .then(data => {
-                                    SendEmail(param.email, { username: param.username })
                                     res.statusCode = 201
                                     res.json(data)
                                 })
+                            SendEmail(param.email, { username: param.username })
                         }
                         else throw new UsernameExists() //custom error object
                     })
@@ -96,7 +97,7 @@ async function usernameExists(username: string, prisma: PrismaClient): Promise<u
     return result
 }
 
-async function addUser(id: string, username: string, password: string, prisma: PrismaClient): Promise<[users, activity]> {    //this returns the user object which can be used to send to the front-end for proceeding further
+async function addUser(id: string, username: string, password: string, prisma: PrismaClient): Promise<users> {    //this returns the user object which can be used to send to the front-end for proceeding further
     const user = await prisma.users.create({
         data: {
             user_id: id,
@@ -108,16 +109,15 @@ async function addUser(id: string, username: string, password: string, prisma: P
             state: "online",
             tags: "Creator and Viewer",
             description: `hey there I'm new to pulse.`,
-            confirmed: 'false'
+            confirmed: 'false',
+            activity: {
+                create: {
+                    state: "online"
+                }
+            }
         }
     })
-    const activity = await prisma.activity.create({
-        data: {
-            user_id: id,
-            state: "online"
-        }
-    })
-    return [user, activity]
+    return user
 }
 
 
