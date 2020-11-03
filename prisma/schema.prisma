@@ -10,6 +10,7 @@ datasource db {
 model activity {
   user_id String          @id
   state   activity_state?
+  users   users           @relation(fields: [user_id], references: [user_id])
 }
 
 model feed {
@@ -20,20 +21,13 @@ model feed {
   timestamp DateTime?
 }
 
-model integrations {
-  user_id       String                      @id
-  platform      String?
-  accountName   String?
-  accountURL    String?
-  showOnProfile integrations_showOnProfile?
-}
-
 model subscription_manager {
   creator_id    String
   viewer_id     String
   subscribed_at DateTime?
 
   @@id([creator_id, viewer_id])
+  @@index([viewer_id], name: "fk_viewer")
 }
 
 model users {
@@ -53,6 +47,8 @@ model users {
   vods         Int?              @default(0)
   channelInfo  users_channelInfo
   state        users_state
+  activity     activity?
+  integrations integrations[]
 }
 
 model view_vod {
@@ -64,16 +60,27 @@ model view_vod {
 
 model vods {
   user_id      String
-  vod_id       String    @unique
+  vod_id       String
   title        String?
   thumbnail    String?
-  views        Int?      @default(0)
+  views        Int?
   published_at DateTime?
   type         String?
   platform     String?
   url          String?
 
   @@id([user_id, vod_id])
+}
+
+model integrations {
+  user_id       String
+  platform      String
+  accountName   String?
+  accountURL    String?
+  showOnProfile integrations_showOnProfile?
+  users         users                       @relation(fields: [user_id], references: [user_id])
+
+  @@id([user_id, platform])
 }
 
 enum activity_state {
