@@ -6,8 +6,8 @@ export async function createPost(vod: vodInfo, user_id: string, prisma: PrismaCl
     var result: vods = await uploadVod(vod, user_id, prisma)
     return result
 }
-export async function deletePost(vod_id: string, prisma: PrismaClient): Promise<vods> {
-    var result: vods = await removeVod(vod_id, prisma)
+export async function deletePost(user_id: string, vod_id: string, prisma: PrismaClient): Promise<vods> {
+    var result: vods = await removeVod(user_id, vod_id, prisma)
     return result
 }
 export async function getVods(user_id: string, prisma: PrismaClient): Promise<vods[]> {
@@ -45,10 +45,13 @@ async function uploadVod(vod: vodInfo, user_id: string, prisma: PrismaClient): P
     })
     return result
 }
-async function removeVod(vod_id: string, prisma: PrismaClient): Promise<vods> {
+async function removeVod(user_id: string, vod_id: string, prisma: PrismaClient): Promise<vods> {
     var result: vods = await prisma.vods.delete({
         where: {
-            vod_id: vod_id
+            user_id_vod_id: {
+                user_id,
+                vod_id
+            }
         }
     })
     return result

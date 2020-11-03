@@ -4,11 +4,15 @@ import { App } from './interfaces'
 export async function connect(app: App, user_id: string, prisma: PrismaClient): Promise<integrations> {
     var result: integrations = await prisma.integrations.create({
         data: {
-            user_id: user_id,
             platform: app.platform,
             accountName: app.platform,
             accountURL: app.accountURL,
-            showOnProfile: app.showOnProfile
+            showOnProfile: app.showOnProfile,
+            users: {
+                connect: {
+                    user_id
+                }
+            }
         }
     })
     return result

@@ -5,7 +5,7 @@ import { Router as OauthRouter } from './oauth'
 import { Router as TwoFactorRouter } from './two-factor-auth'
 
 import jwt from 'jsonwebtoken'
-import { csrf_token_secret, email_token_secret } from '../../config/environment_variables'
+import { email_token_secret } from '../../config/environment_variables'
 
 //initiating the AuthRouter
 export const Router = express.Router()

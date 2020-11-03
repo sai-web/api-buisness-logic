@@ -23,7 +23,7 @@ Router.post('/create', (req, res) => {
 })
 
 Router.post('/delete', (req, res) => {
-    deletePost(req.body.vod_id, req.prisma)
+    deletePost(req.body.user_id, req.body.vod_id, req.prisma)
         .then(() => res.status(200).json({ status: "successful deletion" }))
         .catch(() => res.status(404).json({ status: "unsuccessful deletion" }))
 })
