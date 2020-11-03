@@ -30,11 +30,13 @@ Router.post('/login', (req: Request, res: Response) => {
         jwt.verify(`${req.query.token}`, email_token_secret, (err, data: any) => {
             if (!err) {
                 emailConfirmation(data.username, req.prisma)
-                login({
-                    username: req.body.username,
-                    password: req.body.password,
-                    prisma: req.prisma
-                }, res, req)
+                    .then(() => {
+                        login({
+                            username: req.body.username,
+                            password: req.body.password,
+                            prisma: req.prisma
+                        }, res, req)
+                    })
             } else res.status(400).json({ status: "email could not be confirmed" })
         })
     } else {
