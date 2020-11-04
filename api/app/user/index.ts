@@ -4,6 +4,7 @@ import { invalidCreds } from './helper'
 
 export const Router = express.Router()
 
+//get all the user info
 Router.get('/info', async (req, res) => {
     if (invalidCreds(req.body.info)) {
         res.statusCode = 400
@@ -22,6 +23,7 @@ Router.get('/info', async (req, res) => {
     }
 })
 
+//update user information
 Router.post('/update', async (req, res) => {
     const result = await req.prisma.users.update({
         where: {

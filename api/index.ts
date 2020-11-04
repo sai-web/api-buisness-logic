@@ -54,11 +54,11 @@ app.listen(portnumber, () => console.log(`server started at http://localhost:${p
 /*
 features to add
 1) verification of incoming data to prevent sql injection :: done
-2) 2FA with the speakeasy module for TOTP
+2) 2FA with the speakeasy module for TOTP :: done
 3) xml attacks using libxmljs library :: not using xml processed data
 4) authorization by providing roles
 5) implement CSRF protection :: done
-6) send email verifications through node mailer
+6) send email verifications through node mailer :: done
 https://dzone.com/articles/10-nodejs-security-practices
 https://levelup.gitconnected.com/how-to-implement-csrf-tokens-in-express-f867c9e95af0
 http://sahatyalkabov.com/jsrecipes/#!/backend/csrf-protection-with-express
