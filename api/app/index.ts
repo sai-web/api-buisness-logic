@@ -1,5 +1,7 @@
 import express from 'express'
 
+import jwt from 'jsonwebtoken'
+
 import { Router as activityRouter } from './activity'
 import { Router as connectionRouter } from './connections'
 import { Router as subscriptionRouter } from './subscription'
@@ -8,6 +10,21 @@ import { Router as vodsRouter } from './vods'
 
 //initializing the App Router
 export const Router = express.Router()
+
+//authenticate the requests
+Router.use((req, res, next) => {
+    const { access_token } = req.cookies
+    jwt.verify(access_token, 'access token secret', (err: any, data: any) => {
+        if (!err) next()
+        else res.status(400).json({ status: "no access token provided" })
+    })
+})
+Router.use((req, res, next) => {
+    jwt.verify(req.body.csrf, 'csrf token secret', (err: any, data: any) => {
+        if (!err) next()
+        else res.status(400).json({ status: "invalid request" })
+    })
+})
 
 //the router middlewares within app
 Router.use('/activity', activityRouter)
