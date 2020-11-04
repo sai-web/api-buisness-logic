@@ -2,14 +2,20 @@ import { PrismaClient, subscription_manager } from '@prisma/client'
 import { UsernameNotFound } from '../Errors/UsernameNotFound'
 import { creatorInfo } from './interfaces'
 
+//subscribe to a specfic creator
 export async function subscribe(user: creatorInfo, user_id: string, callback: Function, prisma: PrismaClient): Promise<void> {
     if (addSubs(user, user_id, prisma)) callback()
     else throw new UsernameNotFound()
 }
+
+//unsubscribe from a  creator
+//have to add a previously subscribe to feature to check your previous subscription
 export async function unsubscribe(user: creatorInfo, user_id: string, callback: Function, prisma: PrismaClient): Promise<void> {
     if (deleteSubs(user, user_id, prisma)) callback()
     else throw new UsernameNotFound()
 }
+
+//get all of your current subscriptions
 export async function getSubscriptions(user_id: string, prisma: PrismaClient): Promise<{ creator_id: string }[]> {
     var result = await prisma.subscription_manager.findMany({
         where: {
@@ -21,6 +27,8 @@ export async function getSubscriptions(user_id: string, prisma: PrismaClient): P
     })
     return result
 }
+
+//get all of your current viewers
 export async function getViewers(user_id: string, prisma: PrismaClient): Promise<{ viewer_id: string }[]> {
     var result = await prisma.subscription_manager.findMany({
         where: {

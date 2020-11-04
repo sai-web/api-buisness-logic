@@ -2,14 +2,20 @@ import { PrismaClient, vods } from '@prisma/client'
 import { v4 } from 'uuid'
 import { vodInfo } from './interfaces'
 
+//create a post
+//have to update your feed so that your viewers see your posts
 export async function createPost(vod: vodInfo, user_id: string, prisma: PrismaClient): Promise<vods> {
     var result: vods = await uploadVod(vod, user_id, prisma)
     return result
 }
-export async function deletePost(user_id: string, vod_id: string, prisma: PrismaClient): Promise<vods> {
+
+//delete your posts
+export async function deletePost(vod_id: string, user_id: string, prisma: PrismaClient): Promise<vods> {
     var result: vods = await removeVod(user_id, vod_id, prisma)
     return result
 }
+
+//get all your posts
 export async function getVods(user_id: string, prisma: PrismaClient): Promise<vods[]> {
     var result = await prisma.vods.findMany({
         where: {
@@ -18,6 +24,8 @@ export async function getVods(user_id: string, prisma: PrismaClient): Promise<vo
     })
     return result
 }
+
+//view a certain vod
 export async function watchVod(vod_id: string, user_id: string, prisma: PrismaClient): Promise<{ viewer_id: string, vod_id: string }> {
     var result = await prisma.view_vod.create({
         data: {
