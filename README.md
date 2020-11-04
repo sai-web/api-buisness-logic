@@ -49,4 +49,4 @@ npm run dev
 
 ## Contribute
 
-[discord](https://discord.gg/n9rVDZh)
+[![Join Discord](https://discordapp.com/api/guilds/658189217746255881/embed.png)](https://discord.gg/n9rVDZh)
