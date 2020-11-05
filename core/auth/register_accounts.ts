@@ -43,7 +43,7 @@ export function registration(param: user, res: Response): void {   //this checks
                             addUser(id, param.username, hashedPassword, param.prisma)
                                 .then(data => {
                                     res.statusCode = 201
-                                    res.json(data)
+                                    res.json({ ...data, status: "successful registration" })
                                 })
                             SendEmail(param.email, { username: param.username })
                         }
@@ -97,7 +97,7 @@ async function usernameExists(username: string, prisma: PrismaClient): Promise<u
     return result
 }
 
-async function addUser(id: string, username: string, password: string, prisma: PrismaClient): Promise<users> {    //this returns the user object which can be used to send to the front-end for proceeding further
+async function addUser(id: string, username: string, password: string, prisma: PrismaClient): Promise<any> {    //this returns the user object which can be used to send to the front-end for proceeding further
     const user = await prisma.users.create({
         data: {
             user_id: id,
@@ -115,6 +115,22 @@ async function addUser(id: string, username: string, password: string, prisma: P
                     state: "online"
                 }
             }
+        },
+        select: {
+            user_id: true,
+            username: true,
+            domain: true,
+            created_at: true,
+            channelInfo: true,
+            state: true,
+            tags: true,
+            description: true,
+            confirmed: true,
+            subscription: true,
+            viewers: true,
+            vods: true,
+            activity: true,
+            integrations: true
         }
     })
     return user
@@ -130,6 +146,7 @@ const errorHandler = (err: Error, res: Response): void => { //handles all errors
     res.statusCode = 400
     res.json({
         exception: err.name,
-        status: err.message
+        message: err.message,
+        status: "registration error"
     })
 }

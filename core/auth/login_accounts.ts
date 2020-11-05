@@ -28,8 +28,9 @@ export function login(param: user, res: Response, req: Request): void {
                 if (data.confirmed === "true") {
                     if (data.password) {    //make sure the password is not null
                         checkCreds(param.password, data.password)   //checks whether the passwords match
-                            .then(data => {
-                                if (data) {
+                            .then(valid => {
+                                delete data.password
+                                if (valid) {
                                     var access_token = App_Token({
                                         username: param.username
                                     })
@@ -49,7 +50,8 @@ export function login(param: user, res: Response, req: Request): void {
                                     })
                                     res.json({
                                         type: "bearer",
-                                        status: "token has been set"
+                                        status: "token has been set",
+                                        ...data
                                     })
                                 }
                                 else throw new UsernameNotFound()   //custom error object
@@ -98,14 +100,27 @@ export function Csrf_Token(payload: Payload): string {
     return Csrf_token
 }
 
-async function findUser(username: string, prisma: PrismaClient): Promise<{ password: string, confirmed: "true" | "false" | null } | null> {   //this returns a users object along with a promise allowing to run the .then()
+async function findUser(username: string, prisma: PrismaClient): Promise<any> {   //this returns a users object along with a promise allowing to run the .then()
     const result = await prisma.users.findOne({
         where: {
             domain: username.toLowerCase().replace(/ /g, '')
         },
         select: {
+            user_id: true,
+            username: true,
+            domain: true,
+            created_at: true,
+            channelInfo: true,
+            state: true,
+            tags: true,
+            description: true,
+            confirmed: true,
+            subscription: true,
+            viewers: true,
+            vods: true,
             password: true,
-            confirmed: true
+            activity: true,
+            integrations: true
         }
     })
     return result   //returns a users object or null
@@ -119,6 +134,7 @@ const errorHandler = (err: Error, res: Response): void => { //this will handle a
     res.statusCode = 404
     res.json({
         exception: err.name,
-        status: err.message
+        message: err.message,
+        status: 'login error'
     })
 }
