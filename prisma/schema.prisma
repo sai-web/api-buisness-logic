@@ -25,6 +25,8 @@ model subscription_manager {
   creator_id    String
   viewer_id     String
   subscribed_at DateTime?
+  creator_type  String?
+  viewer_type   String?
 
   @@id([creator_id, viewer_id])
   @@index([viewer_id], name: "fk_viewer")

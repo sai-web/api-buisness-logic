@@ -1,6 +1,7 @@
 import { PrismaClient, subscription_manager } from '@prisma/client'
 import { UsernameNotFound } from '../Errors/UsernameNotFound'
 import { creatorInfo } from './interfaces'
+import { Response } from 'express'
 
 //subscribe to a specfic creator
 export async function subscribe(user: creatorInfo, user_id: string, callback: Function, prisma: PrismaClient): Promise<void> {
@@ -16,29 +17,69 @@ export async function unsubscribe(user: creatorInfo, user_id: string, callback: 
 }
 
 //get all of your current subscriptions
-export async function getSubscriptions(user_id: string, prisma: PrismaClient): Promise<{ creator_id: string }[]> {
-    var result = await prisma.subscription_manager.findMany({
+export async function getSubscriptions(user_id: string, prisma: PrismaClient, res: Response) {
+    var creator_info = await prisma.subscription_manager.findMany({
         where: {
             viewer_id: user_id
         },
         select: {
-            creator_id: true
+            creator_id: true,
+            creator_type: true
         }
     })
-    return result
+    var result = await Promise.all(creator_info.map(async (creator) => {
+        var info = await prisma.users.findOne({
+            where: {
+                user_id: creator.creator_id
+            },
+            select: {
+                domain: true,
+                username: true,
+                photo: true
+            }
+        })
+            .then(data => {
+                return {
+                    ...data,
+                    type: creator.creator_type
+                }
+            })
+        return info
+    }))
+    res.status(200).json({ result })
 }
 
 //get all of your current viewers
-export async function getViewers(user_id: string, prisma: PrismaClient): Promise<{ viewer_id: string }[]> {
-    var result = await prisma.subscription_manager.findMany({
+export async function getViewers(user_id: string, prisma: PrismaClient, res: Response) {
+    var viewer_info = await prisma.subscription_manager.findMany({
         where: {
             creator_id: user_id
         },
         select: {
-            viewer_id: true
+            viewer_id: true,
+            viewer_type: true
         }
     })
-    return result
+    var result = await Promise.all(viewer_info.map(async (viewer) => {
+        var info = await prisma.users.findOne({
+            where: {
+                user_id: viewer.viewer_id
+            },
+            select: {
+                domain: true,
+                username: true,
+                photo: true
+            }
+        })
+            .then(data => {
+                return {
+                    ...data,
+                    type: viewer.viewer_type
+                }
+            })
+        return info
+    }))
+    res.status(200).json({ result })
 }
 
 
