@@ -15,7 +15,7 @@ Router.use('/oauth2', OauthRouter)
 Router.use('/totp', TwoFactorRouter)
 
 //initiating the csrf token and sending it to the client
-Router.get('/csrf', (req: Request, res: Response) => {
+Router.post('/csrf', (req: Request, res: Response) => {
     var _csrf = Csrf_Token({ username: req.body.username })
     res.statusCode = 200
     res.json({

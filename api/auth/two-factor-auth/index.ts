@@ -25,5 +25,6 @@ Router.post('/verify', (req, res) => {
         token: req.body.token
     })
     res.statusCode = 200
+    
     res.json({ verified })
 })
