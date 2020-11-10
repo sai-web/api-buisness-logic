@@ -6,8 +6,8 @@ export const Router = express.Router()
 
 //get your inbox
 //a few fixes to make in the core
-Router.get('/inbox', (req, res) => {
-    getInbox(req.params.user_id, req.prisma)
+Router.post('/inbox', (req, res) => {
+    getInbox(req.params.user_id, req.body.date, req.body.feed_id, req.prisma)
         .then(data => res.status(200).json({
             current_inbox: data
         }))
