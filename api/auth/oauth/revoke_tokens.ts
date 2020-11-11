@@ -9,7 +9,7 @@ import { refresh_token_secret, build_type } from '../../../config/environment_va
 export const Router = express.Router()
 
 Router.post('/', (req: Request, res: Response) => {
-    let { payload_refresh_token } = req.body
+    let { refresh_token: payload_refresh_token } = req.body
     jwt.verify(payload_refresh_token, refresh_token_secret, (err: any, data: any) => {    //validate the refresh token
         if (!err) {
             var access_token = App_Token({  //providing an access token

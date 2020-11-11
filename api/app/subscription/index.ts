@@ -16,7 +16,7 @@ Router.get('/viewers', (req, res) => {
 
 //subscribe to an account
 Router.post('/subscribe', (req, res) => {
-    subscribe(req.body.creator, req.params.user_id, () => res.status(200).json({ status: "unsubscribed successfully" }), req.prisma)
+    subscribe(req.body.creator, req.params.user_id, req.body.viewer_type, () => res.status(200).json({ status: "unsubscribed successfully" }), req.prisma)
         .catch(() => res.status(400).json({ status: "subscription was unsuccessful" }))
 })
 

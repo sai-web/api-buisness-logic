@@ -4,8 +4,8 @@ import { creatorInfo } from './interfaces'
 import { Response } from 'express'
 
 //subscribe to a specfic creator
-export async function subscribe(user: creatorInfo, user_id: string, callback: Function, prisma: PrismaClient): Promise<void> {
-    if (addSubs(user, user_id, prisma)) callback()
+export async function subscribe(user: creatorInfo, user_id: string, viewer_type: string, callback: Function, prisma: PrismaClient): Promise<void> {
+    if (addSubs(user, user_id, viewer_type, prisma)) callback()
     else throw new UsernameNotFound()
 }
 
@@ -27,7 +27,7 @@ export async function getSubscriptions(user_id: string, prisma: PrismaClient, re
             creator_type: true
         }
     })
-    var result = await Promise.all(creator_info.map(async (creator) => {
+    var creators = await Promise.all(creator_info.map(async (creator) => {
         var info = await prisma.users.findOne({
             where: {
                 user_id: creator.creator_id
@@ -46,7 +46,7 @@ export async function getSubscriptions(user_id: string, prisma: PrismaClient, re
             })
         return info
     }))
-    res.status(200).json({ result })
+    res.status(200).json({ creators })
 }
 
 //get all of your current viewers
@@ -60,7 +60,7 @@ export async function getViewers(user_id: string, prisma: PrismaClient, res: Res
             viewer_type: true
         }
     })
-    var result = await Promise.all(viewer_info.map(async (viewer) => {
+    var viewers = await Promise.all(viewer_info.map(async (viewer) => {
         var info = await prisma.users.findOne({
             where: {
                 user_id: viewer.viewer_id
@@ -79,12 +79,12 @@ export async function getViewers(user_id: string, prisma: PrismaClient, res: Res
             })
         return info
     }))
-    res.status(200).json({ result })
+    res.status(200).json({ viewers })
 }
 
 
 //private methods which are not exported
-async function addSubs(user: creatorInfo, user_id: string, prisma: PrismaClient): Promise<subscription_manager | null> {
+async function addSubs(user: creatorInfo, user_id: string, viewer_type: string, prisma: PrismaClient): Promise<subscription_manager | null> {
     var getId = await prisma.users.findOne({
         where: {
             domain: user.domain
@@ -98,7 +98,9 @@ async function addSubs(user: creatorInfo, user_id: string, prisma: PrismaClient)
         result = await prisma.subscription_manager.create({
             data: {
                 creator_id: getId.user_id,
-                viewer_id: user_id
+                viewer_id: user_id,
+                creator_type: "notifiers",
+                viewer_type
             }
         })
     } else result = null

@@ -14,7 +14,7 @@ Router.post('/info', async (req, res) => {
     } else {
         const info = await req.prisma.users.findOne({
             where: {
-                username: req.body.username
+                username: req.body.domain
             },
             select: req.body.info
         })

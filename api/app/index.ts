@@ -21,7 +21,7 @@ Router.use((req, res, next) => {
 })
 Router.use((req, res, next) => {
     jwt.verify(req.body.csrf, 'csrf_token_secret', (err: any, data: any) => {
-        if (!err) next()
+        if (data.access_token === req.cookies.access_token && !err) next()
         else res.status(400).json({ status: "invalid request" })
     })
 })

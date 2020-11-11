@@ -20,7 +20,7 @@ Router.post('/watch', (req, res) => {
 
 //create a new post
 Router.post('/create', (req, res) => {
-    createPost(req.body.vod_id, req.body.user_id, req.prisma)
+    createPost(req.body.vod_info, req.body.user_id, req.prisma)
         .then(data => res.status(200).json({ data }))
         .catch(() => res.status(400).json({ status: "failed to save the data" }))
 })

@@ -19,6 +19,10 @@ interface Payload {
     refresh_token?: string
 }
 
+interface Csrf_Payload {
+    access_token: string
+}
+
 // var prisma = new PrismaClient()
 
 export function login(param: user, res: Response, req: Request): void {
@@ -92,7 +96,7 @@ export function Refresh_Token(payload: Payload): string {  //access token that w
     return refresh_token
 }
 
-export function Csrf_Token(payload: Payload): string {
+export function Csrf_Token(payload: Csrf_Payload): string {
     const Csrf_token = jwt.sign(payload, csrf_token_secret, {
         algorithm: "HS512",
         expiresIn: 864000
