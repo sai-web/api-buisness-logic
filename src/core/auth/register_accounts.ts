@@ -1,5 +1,6 @@
 import { PrismaClient, users } from '@prisma/client'
 import { UsernameExists } from '../Errors/UsernameExists'
+import { EmailExists } from '../Errors/EmailExists'
 
 import bcrypt from 'bcryptjs'
 import { v4 } from 'uuid'
@@ -40,12 +41,19 @@ export function registration(param: user, res: Response): void {   //this checks
                 usernameExists(param.username, param.prisma)
                     .then(data => {
                         if (data === "not present") {
-                            addUser(id, param.username, hashedPassword, param.prisma)
+                            emailExists(param.email, param.prisma)
                                 .then(data => {
-                                    res.statusCode = 201
-                                    res.json({ ...data, status: "successful registration" })
+                                    if (data) {
+                                        addUser(id, param.username, param.email, hashedPassword, param.prisma)
+                                            .then(data => {
+                                                res.statusCode = 201
+                                                res.json({ ...data, status: "successful registration" })
+                                            })
+                                        SendEmail(param.email, { username: param.username })
+                                    }
+                                    else throw new EmailExists()
                                 })
-                            SendEmail(param.email, { username: param.username })
+                                .catch(err => errorHandler(err, res))
                         }
                         else throw new UsernameExists() //custom error object
                     })
@@ -97,7 +105,16 @@ async function usernameExists(username: string, prisma: PrismaClient): Promise<u
     return result
 }
 
-async function addUser(id: string, username: string, password: string, prisma: PrismaClient): Promise<any> {    //this returns the user object which can be used to send to the front-end for proceeding further
+async function emailExists(email: string, prisma: PrismaClient): Promise<Boolean> {
+    const result = await prisma.users.findOne({
+        where: {
+            email
+        }
+    })
+    return Promise.resolve(result == null)
+}
+
+async function addUser(id: string, username: string, email: string, password: string, prisma: PrismaClient): Promise<any> {    //this returns the user object which can be used to send to the front-end for proceeding further
     const user = await prisma.users.create({
         data: {
             user_id: id,
@@ -114,7 +131,8 @@ async function addUser(id: string, username: string, password: string, prisma: P
                 create: {
                     state: "online"
                 }
-            }
+            },
+            email
         },
         select: {
             user_id: true,

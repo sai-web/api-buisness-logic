@@ -41,7 +41,7 @@ model users {
   created_at   DateTime
   confirmed    users_confirmed?  @default(false)
   phone        String?
-  email        String?
+  email        String?           @unique
   tags         String?
   description  String?
   viewers      Int?              @default(0)

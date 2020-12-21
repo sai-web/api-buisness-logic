@@ -32,7 +32,7 @@
     "dotenv": "^8.2.0"
   },
   "scripts": {
-    "dev": "node ./api/index.js"
+    "dev": "node ./src-js/api/index.js"
   },
   "repository": {
     "type": "git",
