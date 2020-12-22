@@ -11,6 +11,7 @@ import jwt from 'jsonwebtoken'
 import nodemailer from 'nodemailer'
 
 import { email_token_secret, email_address, email_password } from '../../config/environment_variables'
+import { design } from './email_design'
 
 interface user {
     username: string
@@ -88,8 +89,8 @@ async function SendEmail(email: string, params: { username: string }) {
         from: email_address,
         to: email,
         subject: 'Required account confirmation within 24 hours',
-        text: `Hello ${params.username}, you're almost done. Now to start using your account confirm your email address within the next 24 hours!!`,
-        html: `<a href="http://localhost:8080/auth/login?token=${mailToken}">confirm your email</a>`
+        // text: `Hello ${params.username}, you're almost done. Now to start using your account confirm your email address within the next 24 hours!!`,
+        html: design(params.username, mailToken)
     }, function (error, info) {
         if (error) return false
         else return true
