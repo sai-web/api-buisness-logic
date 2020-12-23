@@ -48,12 +48,10 @@ npm run dev
 ---
 
 # Auth endpoints
-```
-create an account with /auth/register         (returns User object)
-login or confirm email with /auth/login				(returns access_token and refresh_token in cookies and User object in res)
-get _csrf token with /auth/_csrf 			(returns _crsf token and expiration time in seconds)
-revoke tokens with /auth/oauth/revoke
-```
+- create an account with /auth/register         (returns User object)
+- login or confirm email with /auth/login				(returns access_token and refresh_token in cookies and User object in res)
+- get _csrf token with /auth/_csrf 			(returns _crsf token and expiration time in seconds)
+- revoke tokens with /auth/oauth/revoke
 
 ---
 
