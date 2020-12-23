@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express'
 import { login, registration, Csrf_Token, emailConfirmation } from '../../index'
 
-import { Router as OauthRouter } from './oauth'
-import { Router as TwoFactorRouter } from './two-factor-auth'
+import { Router as OauthRouter } from './oauth/router'
+import { Router as TwoFactorRouter } from './two-factor-auth/2FA'
 
 import jwt from 'jsonwebtoken'
 import { email_token_secret } from '../../config/environment_variables'

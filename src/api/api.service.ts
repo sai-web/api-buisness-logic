@@ -6,8 +6,8 @@ import cookieParser from 'cookie-parser'
 
 import { PrismaClient } from '@prisma/client'
 
-import { Router as AuthRouter } from './auth'
-import { Router as AppRouter } from './app'
+import { Router as AuthRouter } from './auth/auth.service'
+import { Router as AppRouter } from './app/app.service'
 
 import { port } from '../config/environment_variables'
 
