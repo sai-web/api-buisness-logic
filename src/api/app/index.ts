@@ -15,7 +15,10 @@ export const Router = express.Router()
 Router.use((req, res, next) => {
     const { access_token } = req.cookies
     jwt.verify(access_token, 'access token secret', (err: any, data: any) => {
-        if (!err) next()
+        if (!err) {
+            req.query.identifier = data.user_id
+            next()
+        }
         else res.status(400).json({ status: "no access token provided" })
     })
 })
