@@ -7,7 +7,7 @@ export const Router = express.Router()
 //get all the user info
 Router.post('/info', async (req, res) => {
     if (invalidCreds(req.body.info)) {
-        res.statusCode = 400
+        res.statusCode = 401
         res.json({
             status: "important credentials cannot be shared"
         })
@@ -25,12 +25,7 @@ Router.post('/info', async (req, res) => {
 
 //update user information
 Router.post('/update', async (req, res) => {
-    if (invalidCreds(req.body.data)) {
-        res.statusCode = 400
-        res.json({
-            status: "important credentials cannot be shared"
-        })
-    } else {
+    if (req.query.identifier === req.body.user_id) {
         const result = await req.prisma.users.update({
             where: {
                 user_id: req.body.user_id
@@ -39,5 +34,5 @@ Router.post('/update', async (req, res) => {
         })
         res.statusCode = 200
         res.json(result)
-    }
+    } else res.status(401).json({ status: "important credentials cannot be shared" })
 })
