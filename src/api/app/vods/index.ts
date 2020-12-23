@@ -20,14 +20,18 @@ Router.post('/watch', (req, res) => {
 
 //create a new post
 Router.post('/create', (req, res) => {
-    createPost(req.body.vod_info, req.body.user_id, req.prisma)
-        .then(data => res.status(200).json({ data }))
-        .catch(() => res.status(400).json({ status: "failed to save the data" }))
+    if (req.query.identifier === req.body.user_id) {
+        createPost(req.body.vod_info, req.body.user_id, req.prisma)
+            .then(data => res.status(200).json({ data }))
+            .catch(() => res.status(400).json({ status: "failed to save the data" }))
+    } else res.status(401).json({ status: "unauthorised access to user credentials" })
 })
 
 //delete a post
 Router.post('/delete', (req, res) => {
-    deletePost(req.body.vod_id, req.body.user_id, req.prisma)
-        .then(() => res.status(200).json({ status: "successful deletion" }))
-        .catch(() => res.status(404).json({ status: "unsuccessful deletion" }))
+    if (req.query.identifier === req.body.user_id) {
+        deletePost(req.body.vod_id, req.body.user_id, req.prisma)
+            .then(() => res.status(200).json({ status: "successful deletion" }))
+            .catch(() => res.status(404).json({ status: "unsuccessful deletion" }))
+    } else res.status(401).json({ status: "unauthorised access to user credentials" })
 })

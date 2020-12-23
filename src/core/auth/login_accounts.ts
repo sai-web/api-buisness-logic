@@ -15,7 +15,7 @@ interface user {
 }
 
 interface Payload {
-    username: string
+    user_id: string
     refresh_token?: string
 }
 
@@ -36,10 +36,10 @@ export function login(param: user, res: Response, req: Request): void {
                                 delete data.password
                                 if (valid) {
                                     var access_token = App_Token({
-                                        username: param.username
+                                        user_id: data.user_id
                                     })
                                     var refresh_token = Refresh_Token({
-                                        username: param.username
+                                        user_id: data.user_id
                                     })
                                     res.statusCode = 202
                                     res.cookie('access_token', access_token, {

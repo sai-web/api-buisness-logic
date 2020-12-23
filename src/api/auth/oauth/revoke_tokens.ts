@@ -13,11 +13,11 @@ Router.post('/', (req: Request, res: Response) => {
     jwt.verify(payload_refresh_token, refresh_token_secret, (err: any, data: any) => {    //validate the refresh token
         if (!err) {
             var access_token = App_Token({  //providing an access token
-                username: req.body.username,
+                user_id: req.body.user_id,
                 refresh_token: payload_refresh_token
             })
             var refresh_token = Refresh_Token({ //providing a refresh token
-                username: req.body.username,
+                user_id: req.body.user_id,
                 refresh_token: payload_refresh_token
             })
             res.statusCode = 200
