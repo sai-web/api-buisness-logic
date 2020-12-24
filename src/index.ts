@@ -7,6 +7,7 @@ export * from './core/app/vods_management'
 
 export * from './core/auth/login_accounts'
 export * from './core/auth/register_accounts'
+export * from './core/auth/revoke_tokens'
 
 export * from './core/Errors/UsernameExists'
 export * from './core/Errors/UsernameNotFound'
