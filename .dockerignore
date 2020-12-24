@@ -4,8 +4,8 @@
 #ignore the dotenv files
 .env
 
-#ignore the js files
-*.js
+#ignore the ts files
+*.ts
 
 #ignore the config folder
 config
