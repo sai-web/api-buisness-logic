@@ -8,13 +8,15 @@ import { Router as subscriptionRouter } from './subscription'
 import { Router as userRouter } from './user'
 import { Router as vodsRouter } from './vods'
 
+import { access_token_secret, csrf_token_secret } from '../../config/environment_variables'
+
 //initializing the App Router
 export const Router = express.Router()
 
 //authenticate the requests
 Router.use((req, res, next) => {
     const { access_token } = req.cookies
-    jwt.verify(access_token, 'access token secret', (err: any, data: any) => {
+    jwt.verify(access_token, access_token_secret, (err: any, data: any) => {
         if (!err) {
             req.query.identifier = data.user_id
             next()
@@ -23,7 +25,7 @@ Router.use((req, res, next) => {
     })
 })
 Router.use((req, res, next) => {
-    jwt.verify(req.body.csrf, 'csrf_token_secret', (err: any, data: any) => {
+    jwt.verify(req.body.csrf, csrf_token_secret, (err: any, data: any) => {
         if (data.access_token === req.cookies.access_token && !err) next()
         else res.status(400).json({ status: "invalid request" })
     })
