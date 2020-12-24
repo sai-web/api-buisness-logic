@@ -24,10 +24,8 @@ Router.use((req, res, next) => {
             next()
         }
         else {
-            try {
-                Revoke(req, res, refresh_token)
-            } catch { }
-            res.status(400).json({ status: "no access token provided" })
+            try {Revoke(req, res, refresh_token)}
+            catch {res.status(400).json({ status: "no access token provided" })}
         }
     })
 })
