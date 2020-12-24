@@ -1,7 +1,7 @@
 {
   "name": "learn-typescript",
   "version": "1.0.0",
-  "description": "",
+  "description": "This is a restful api to gather or mutate static information from the mysql database via prisma2.",
   "main": "index.js",
   "dependencies": {
     "@prisma/client": "^2.10.1",
@@ -32,13 +32,13 @@
     "dotenv": "^8.2.0"
   },
   "scripts": {
-    "dev": "node ./src-js/api/index.js"
+    "dev": "node ./src-js/api/api.service.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sai-web/api-buisness-logic.git"
   },
-  "author": "",
+  "author": "Sai Sumith",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/sai-web/api-buisness-logic/issues"
