@@ -110,4 +110,4 @@ npm run dev
 
 ## Contribute
 
-[![Join Discord](https://discordapp.com/api/guilds/658189217746255881/embed.png)](https://discord.gg/n9rVDZh)
+[![Join Discord](https://img.shields.io/badge/chat-on%20discord-7289da.svg)](https://discord.gg/n9rVDZh)
